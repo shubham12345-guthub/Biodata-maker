@@ -2,108 +2,127 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Universal Biodata Maker | PC & Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Professional Biodata Maker | Full Mobile View</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root { --primary: #2c3e50; --accent: #3498db; --bg: #eaeff2; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 0; color: #333; }
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f4f7f9; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 0; color: #333; overflow-x: hidden; }
         
-        /* Layout Engine */
-        .app-wrapper { display: flex; flex-direction: row; min-height: 100vh; }
+        /* Main Layout */
+        .main-container { display: flex; flex-direction: row; gap: 20px; max-width: 100%; margin: auto; padding: 20px; align-items: flex-start; }
         
-        /* Editor Sidebar (Left on PC, Top on Mobile) */
-        .editor-side { width: 420px; background: #fff; padding: 25px; box-shadow: 4px 0 15px rgba(0,0,0,0.05); z-index: 10; height: 100vh; overflow-y: auto; position: sticky; top: 0; }
+        /* Editor Sidebar */
+        .editor-side { flex: 0 0 400px; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); max-height: 90vh; overflow-y: auto; }
+        .section-box { background: #fcfcfc; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #eee; border-left: 6px solid var(--accent); }
+        h3 { margin-top: 0; font-size: 1rem; color: var(--primary); }
         
-        /* Preview Side (Right on PC, Bottom on Mobile) */
-        .preview-side { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; overflow-x: hidden; }
+        .input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        input, select { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; min-width: 0; }
+        .key-input { font-weight: bold; background: #f0f0f0; max-width: 110px; }
 
-        /* THE MOBILE SCALE TRICK */
-        .pdf-scaler { transform-origin: top center; transition: 0.3s; }
+        /* Preview Area - THE FIX IS HERE */
+        .preview-side { flex: 1; display: flex; flex-direction: column; align-items: center; background: #525659; padding: 20px; border-radius: 16px; overflow-x: auto; }
         
-        #pdf-content { 
-            width: 210mm; /* Strict A4 Width */
-            min-height: 297mm; /* Strict A4 Height */
-            background: white; 
-            padding: 40px; 
-            box-sizing: border-box; 
-            position: relative; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.2);
-        }
-
-        /* Responsive Form elements */
-        .section-box { background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0; border-left: 6px solid var(--accent); }
-        .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
-        input, select { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; width: 100%; }
-        .key-input { font-weight: bold; background: #f1f5f9; max-width: 130px; }
+        /* Forces the container to look like a real A4 page */
+        #pdf-wrap { background: white; width: 210mm; min-height: 296mm; padding: 0; box-shadow: 0 0 20px rgba(0,0,0,0.5); transform-origin: top center; }
         
-        /* PDF Elements */
-        .doc-title { font-size: 40px; font-weight: 900; text-align: center; margin-bottom: 30px; letter-spacing: 5px; text-transform: uppercase; }
-        .photo-box { position: absolute; top: 40px; right: 40px; width: 120px; height: 150px; border: 1px solid #ddd; background: #fdfdfd; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
-        .preview-heading { background: #f1f5f9; padding: 10px 15px; font-weight: bold; margin-top: 25px; text-transform: uppercase; border-radius: 4px; border-left: 4px solid #333; }
-        .entry { display: grid; grid-template-columns: 180px 20px 1fr; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; }
-
+        #pdf-content { width: 210mm; min-height: 296mm; padding: 40px; box-sizing: border-box; position: relative; background: white; }
+        
         /* Themes */
         .theme-1 { border-top: 20px solid #2c3e50; }
-        .theme-2 { border: 15px solid #d4af37; }
-        .theme-6 { background: #1a1a1a; color: white !important; }
-        .theme-6 .preview-heading { background: #333; color: white; border-left-color: #666; }
+        .theme-2 { border: 15px solid #d4af37; font-family: 'Georgia', serif; }
+        .theme-3 { border-left: 20px solid #3498db; background: #f9fcff; }
+        .theme-4 { border: 12px solid #27ae60; }
+        .theme-5 { border-top: 20px solid #e91e63; }
+        .theme-6 { background: #222; color: #eee !important; }
+        .theme-6 .preview-heading { background: #444; color: #fff; }
+        .theme-7 { border: 2px solid #8e44ad; }
+        .theme-8 { background: linear-gradient(135deg, #fff, #e3f2fd); border-right: 15px solid #1976d2; }
+        .theme-9 { font-family: 'Courier New', monospace; border: 1px solid #333; }
+        .theme-10 { border-top: 25px solid #ff5722; border-bottom: 25px solid #ff5722; }
+        .theme-11 { border-left: 10px solid #607d8b; border-right: 10px solid #607d8b; }
+        .theme-12 { background: #fffde7; border: 5px dashed #fbc02d; }
+        .theme-13 { border: 15px solid #795548; color: #3e2723; }
+        .theme-14 { border-top: 20px solid #00bcd4; border-left: 20px solid #00bcd4; }
+        .theme-15 { background: #f3e5f5; border: 10px solid #7b1fa2; border-radius: 50px 0; }
 
-        /* Buttons */
-        .btn-download { background: #10b981; color: white; border: none; padding: 15px 40px; border-radius: 50px; cursor: pointer; font-size: 18px; font-weight: bold; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
-        .btn-add { background: #6366f1; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-        .btn-del { background: #ef4444; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
+        .doc-title { font-size: 36px; font-weight: 900; text-align: center; margin-bottom: 30px; letter-spacing: 6px; text-transform: uppercase; }
+        .photo-box { position: absolute; top: 40px; right: 40px; width: 110px; height: 140px; border: 1px solid #ddd; background: #f9f9f9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .preview-heading { background: #eee; padding: 10px 15px; font-weight: bold; margin-top: 20px; text-transform: uppercase; border-radius: 4px; font-size: 13px; color: #000; }
+        .entry { display: grid; grid-template-columns: 160px 20px 1fr; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 14px; }
+        
+        .btn-add { background: #2ecc71; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-del { background: #ff4757; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; }
+        .btn-download { background: #3498db; color: white; border: none; padding: 15px 40px; border-radius: 50px; cursor: pointer; font-weight: bold; font-size: 18px; margin-bottom: 15px; width: 100%; max-width: 300px; }
 
-        /* MOBILE ADJUSTMENTS */
+        /* MOBILE RESPONSIVENESS */
         @media (max-width: 800px) {
-            .app-wrapper { flex-direction: column; }
-            .editor-side { width: 100%; height: auto; position: relative; padding: 15px; box-sizing: border-box; }
-            .preview-side { padding: 20px 5px; background: #333; }
-            .btn-download { width: 90%; position: sticky; top: 10px; z-index: 100; }
-            
-            /* Scale the A4 preview down to fit mobile screen width */
-            .pdf-scaler { transform: scale(0.42); } /* Adjust this if needed for your specific screen */
+            .main-container { flex-direction: column; padding: 10px; }
+            .editor-side { flex: none; width: 100%; box-sizing: border-box; max-height: none; }
+            .preview-side { width: 100%; padding: 10px; box-sizing: border-box; overflow-x: auto; }
+            /* This zooms the preview down so it fits on mobile screens without breaking the PDF export */
+            #pdf-wrap { transform: scale(0.4); transform-origin: top left; margin-bottom: -500px; }
         }
     </style>
 </head>
 <body>
 
-<div class="app-wrapper">
+<div class="main-container">
     <div class="editor-side">
-        <h2 style="margin-top:0;">📋 Professional Maker</h2>
+        <h2 style="margin:0 0 15px 0; font-size: 20px;">⚡ Pro Biodata Maker</h2>
         
-        <div class="section-box" style="border-left-color: #f59e0b;">
-            <label><b>📝 Document Title:</b></label>
-            <input type="text" id="userTitle" value="BIODATA" oninput="updatePreview()">
+        <div class="section-box" style="border-left-color: #e67e22;">
+            <label><b>📝 Heading:</b></label>
+            <input type="text" id="userDocTitle" value="BIODATA" oninput="updatePreview()" style="font-weight: bold; border: 2px solid #e67e22;">
         </div>
 
-        <div class="section-box" style="border-left-color: #8b5cf6;">
-            <label><b>🎨 Choose Theme:</b></label>
-            <select id="themeSelect" onchange="updatePreview()" style="margin: 10px 0;">
-                <option value="theme-1">Corporate Navy</option>
-                <option value="theme-2">Royal Gold</option>
-                <option value="theme-3">Modern Sky</option>
-                <option value="theme-6">Midnight Dark</option>
-                <option value="theme-10">Sunset Orange</option>
+        <div class="section-box" style="border-left-color: #9b59b6;">
+            <label><b>🎨 Theme:</b></label>
+            <select id="themeSelect" onchange="updatePreview()">
+                <option value="theme-1">1. Corporate Navy</option>
+                <option value="theme-2">2. Royal Gold</option>
+                <option value="theme-3">3. Modern Sky</option>
+                <option value="theme-4">4. Forest Green</option>
+                <option value="theme-5">5. Elegant Rose</option>
+                <option value="theme-6">6. Midnight Dark</option>
+                <option value="theme-7">7. Lavender Border</option>
+                <option value="theme-8">8. Ocean Gradient</option>
+                <option value="theme-9">9. Typewriter</option>
+                <option value="theme-10">10. Sunset Bold</option>
+                <option value="theme-11">11. Slate Modern</option>
+                <option value="theme-12">12. Vintage Paper</option>
+                <option value="theme-13">13. Earthy Coffee</option>
+                <option value="theme-14">14. Cyan Corner</option>
+                <option value="theme-15">15. Artistic Purple</option>
             </select>
-            <label><b>📷 Photo:</b></label>
+            <label style="display:block; margin-top:10px;"><b>📷 Photo:</b></label>
             <input type="file" accept="image/*" onchange="uploadImage(event)">
         </div>
 
         <div id="all-sections">
             <div class="section-box">
                 <h3>Personal Details</h3>
-                <div class="fields">
-                    <div class="input-row"><input value="Full Name" class="key-input"><input placeholder="Value" class="val-input" oninput="updatePreview()"><button class="btn-del" onclick="this.parentElement.remove();updatePreview()">✖</button></div>
-                    <div class="input-row"><input value="Date of Birth" class="key-input"><input placeholder="Value" class="val-input" oninput="updatePreview()"><button class="btn-del" onclick="this.parentElement.remove();updatePreview()">✖</button></div>
+                <div class="field-container">
+                    <div class="input-row"><input value="Full Name" class="key-input"><input placeholder="Value" class="val-input" oninput="updatePreview()"><button class="btn-del" onclick="removeField(this)">✖</button></div>
+                    <div class="input-row"><input value="Date of Birth" class="key-input"><input placeholder="Value" class="val-input" oninput="updatePreview()"><button class="btn-del" onclick="removeField(this)">✖</button></div>
                 </div>
                 <button class="btn-add" onclick="addField(this)">+ Add Field</button>
             </div>
+            
             <div class="section-box">
                 <h3>Family Details</h3>
-                <div class="fields">
-                    <div class="input-row"><input value="Father's Name" class="key-input"><input placeholder="Value" class="val-input" oninput="updatePreview()"><button class="btn-del" onclick="this.parentElement.remove();updatePreview()">✖</button></div>
+                <div class="field-container">
+                    <div class="input-row"><input value="Father's Name" class="key-input"><input placeholder="Value" class="val-input" oninput="updatePreview()"><button class="btn-del" onclick="removeField(this)">✖</button></div>
+                </div>
+                <button class="btn-add" onclick="addField(this)">+ Add Field</button>
+            </div>
+
+            <div class="section-box">
+                <h3>Contact Info</h3>
+                <div class="field-container">
+                    <div class="input-row"><input value="Mobile" class="key-input"><input placeholder="Value" class="val-input" oninput="updatePreview()"><button class="btn-del" onclick="removeField(this)">✖</button></div>
                 </div>
                 <button class="btn-add" onclick="addField(this)">+ Add Field</button>
             </div>
@@ -111,9 +130,8 @@
     </div>
 
     <div class="preview-side">
-        <button class="btn-download" onclick="downloadPDF()">⬇ Download PDF</button>
-        
-        <div class="pdf-scaler" id="scaler">
+        <button class="btn-download" onclick="downloadPDF()">⬇ Download Full PDF</button>
+        <div id="pdf-wrap">
             <div id="pdf-content" class="theme-1">
                 <div class="photo-box">
                     <img id="img-output" style="display:none">
@@ -127,20 +145,6 @@
 </div>
 
 <script>
-    // Auto-adjust scale on mobile load
-    function adjustScale() {
-        if (window.innerWidth < 800) {
-            const scale = (window.innerWidth - 20) / 794; // 794px is roughly 210mm
-            document.getElementById('scaler').style.transform = `scale(${scale})`;
-            document.querySelector('.preview-side').style.height = (297 * 3.78 * scale + 100) + 'px';
-        } else {
-            document.getElementById('scaler').style.transform = `scale(1)`;
-            document.querySelector('.preview-side').style.height = 'auto';
-        }
-    }
-    window.addEventListener('resize', adjustScale);
-    window.addEventListener('load', adjustScale);
-
     function uploadImage(e) {
         const reader = new FileReader();
         reader.onload = () => {
@@ -152,44 +156,46 @@
     }
 
     function addField(btn) {
+        const container = btn.previousElementSibling;
         const div = document.createElement('div');
         div.className = 'input-row';
-        div.innerHTML = `<input placeholder="Label" class="key-input"><input placeholder="Value" class="val-input" oninput="updatePreview()"><button class="btn-del" onclick="this.parentElement.remove();updatePreview()">✖</button>`;
-        btn.previousElementSibling.appendChild(div);
+        div.innerHTML = `<input placeholder="Label" class="key-input"><input placeholder="Value" class="val-input" oninput="updatePreview()"><button class="btn-del" onclick="removeField(this)">✖</button>`;
+        container.appendChild(div);
         updatePreview();
     }
 
+    function removeField(btn) { btn.parentElement.remove(); updatePreview(); }
+
     function updatePreview() {
-        document.getElementById('display-title').innerText = document.getElementById('userTitle').value || 'BIODATA';
+        const titleInput = document.getElementById('userDocTitle').value;
+        document.getElementById('display-title').innerText = titleInput || 'BIODATA';
         document.getElementById('pdf-content').className = document.getElementById('themeSelect').value;
-        
+
         const render = document.getElementById('preview-render');
         render.innerHTML = '';
         document.querySelectorAll('#all-sections .section-box').forEach(sec => {
-            const title = sec.querySelector('h3').innerText;
+            const heading = sec.querySelector('h3').innerText;
             const rows = sec.querySelectorAll('.input-row');
             if(rows.length > 0) {
-                let html = `<div class="preview-heading">${title}</div>`;
+                render.innerHTML += `<div class="preview-heading">${heading}</div>`;
                 rows.forEach(row => {
                     const k = row.querySelector('.key-input').value;
                     const v = row.querySelector('.val-input').value || '---';
-                    html += `<div class="entry"><div>${k}</div><div>:</div><div>${v}</div></div>`;
+                    render.innerHTML += `<div class="entry"><div>${k}</div><div>:</div><div>${v}</div></div>`;
                 });
-                render.innerHTML += html;
             }
         });
     }
 
-    async function downloadPDF() {
+    function downloadPDF() {
         const element = document.getElementById('pdf-content');
         const opt = {
             margin: 0,
-            filename: 'Professional_Biodata.pdf',
+            filename: 'My_Biodata.pdf',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
-        // The script captures the 210mm div exactly
         html2pdf().set(opt).from(element).save();
     }
 
